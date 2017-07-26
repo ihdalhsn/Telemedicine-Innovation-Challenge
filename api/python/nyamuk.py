@@ -7,6 +7,7 @@ def on_message(client, userdata, message):
     return
 def on_list_full():
     #check if list full, call detection algoritm
+    #wait for husna
     return
 
 #Initialize MQTT
