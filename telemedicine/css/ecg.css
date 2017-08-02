@@ -1,0 +1,7 @@
+#ecg{
+  border: 1px solid rgb(204, 204, 204);
+  border-radius: 5px;
+  cursor: pointer;
+  width: 795px;
+  height: 200px;
+}
