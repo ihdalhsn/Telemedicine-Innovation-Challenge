@@ -16,6 +16,7 @@
  
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
+#include <SPI.h>
 /**
  * Constant Variable Section 
  */
@@ -33,8 +34,8 @@ String dataString = "";
  */
 //Connect To Wifi
 void wifi_conn(){
-  const char* ssid     = "R";
-  const char* password = "R12345678";
+  const char* ssid     = "Rhythm";
+  const char* password = "rdevelopment";
   Serial.println();
   Serial.print("Rhythym Connecting to ");
   Serial.println(ssid);
@@ -65,7 +66,6 @@ void reconnect_MQTT() {
     if (client.connect(clientId.c_str())) {
       Serial.println("connected");
       // Once connected, publish an announcement...
-      client.publish("Rhyt_Top", "Rhythym Conn OK");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -101,23 +101,12 @@ void loop() {
   //Data start Reading
   if((digitalRead(D1) != 1)||(digitalRead(D0) != 1)){
     // send the value of analog input 0
-    if(curval != 99){
-        String readSensor = "," + analogRead(A0);
-        dataString = dataString + readSensor;
-        curval++;
-        //Debug Function
-        Serial.println(dataString);
-        //Wait for a bit to keep serial data from saturating
-        delay(1);
-    }else{
-        char *msg = new char[dataString.length()];
-        strcpy(msg, dataString.c_str());
-        client.publish("Rhyt_Top",msg);
-        dataString = "";
-        delete [] msg;
-        curval = 0;     
-        delay(1);
-    }
+        int msgint = analogRead(0);
+        String msg = String(msgint,DEC);
+        char msgBuffer[4];
+        msg.toCharArray(msgBuffer,5);
+        client.publish("RhythmR01",msgBuffer);
+        Serial.println(msgBuffer);
   }
 
 }

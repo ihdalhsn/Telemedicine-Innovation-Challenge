@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "/home/samurai/.arduino15/packages/esp8266/hardware/esp8266/2.3.0/cores/esp8266",
+                "${workspaceRoot}"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": false,
+                "path": [
+                    "/home/samurai/.arduino15/packages/esp8266/hardware/esp8266/2.3.0/cores/esp8266",
+                    "${workspaceRoot}"
+                ]
+            },
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 2
+}
