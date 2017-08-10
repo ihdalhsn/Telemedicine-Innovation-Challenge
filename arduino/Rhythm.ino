@@ -17,12 +17,17 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <SPI.h>
+
+extern "C" {
+  #include "user_interface.h"
+}
+
 /**
  * Constant Variable Section 
  */
 WiFiClient espClient;
 PubSubClient client(espClient);
-const char* mqtt_server_addr = "broker.hivemq.com";
+const char* mqtt_server_addr = "192.168.43.74";
 
 /**
  * Variable Section
@@ -32,6 +37,58 @@ String dataString = "";
 /**
  * Function Section
  */
+os_timer_t myTimer;
+
+bool tickOccured;
+
+// start of timerCallback
+void timerCallback(void *pArg) {
+
+      tickOccured = true;
+
+} // End of timerCallback
+
+void user_init(void) {
+ /*
+  os_timer_setfn - Define a function to be called when the timer fires
+
+void os_timer_setfn(
+      os_timer_t *pTimer,
+      os_timer_func_t *pFunction,
+      void *pArg)
+
+Define the callback function that will be called when the timer reaches zero. The pTimer parameters is a pointer to the timer control structure.
+
+The pFunction parameters is a pointer to the callback function.
+
+The pArg parameter is a value that will be passed into the called back function. The callback function should have the signature:
+void (*functionName)(void *pArg)
+
+The pArg parameter is the value registered with the callback function.
+*/
+
+      os_timer_setfn(&amp;myTimer, timerCallback, NULL);
+
+/*
+      os_timer_arm -  Enable a millisecond granularity timer.
+
+void os_timer_arm(
+      os_timer_t *pTimer,
+      uint32_t milliseconds,
+      bool repeat)
+
+Arm a timer such that is starts ticking and fires when the clock reaches zero.
+
+The pTimer parameter is a pointed to a timer control structure.
+The milliseconds parameter is the duration of the timer measured in milliseconds. The repeat parameter is whether or not the timer will restart once it has reached zero.
+
+*/
+
+      os_timer_arm(&amp;myTimer, 1000, true);
+} // End of user_init
+
+
+
 //Connect To Wifi
 void wifi_conn(){
   const char* ssid     = "Rhythm";
@@ -87,27 +144,37 @@ void setup() {
   pinMode(D1, INPUT); // Setup for leads off detection LO +
   pinMode(D0, INPUT); // Setup for leads off detection LO -
   wifi_conn();
+  tickOccured = false;
+  user_init();
+
 }
 
 void loop() {
   
   //MQTT connection checker
-  if (!client.connected()) {
-    reconnect_MQTT();
-  }
-  client.loop();
   
+  if (tickOccured == true)
+  {
+    if (!client.connected()) {
+      reconnect_MQTT();
+    }
+    client.loop();
 
-  //Data start Reading
-  if((digitalRead(D1) != 1)||(digitalRead(D0) != 1)){
-    // send the value of analog input 0
-        int msgint = analogRead(0);
-        String msg = String(msgint,DEC);
-        char msgBuffer[4];
-        msg.toCharArray(msgBuffer,5);
-        client.publish("RhythmR01",msgBuffer);
-        Serial.println(msgBuffer);
+    Serial.println("Tick Occurred");
+    tickOccured = false;
   }
+
+  yield();  // or delay(0);
+  // //Data start Reading
+  // if((digitalRead(D1) != 1)||(digitalRead(D0) != 1)){
+  //   // send the value of analog input 0
+  //       int msgint = analogRead(0);
+  //       String msg = String(msgint,DEC);
+  //       char msgBuffer[4];
+  //       msg.toCharArray(msgBuffer,5);
+  //       client.publish("RhythmR01",msgBuffer);
+  //       Serial.println(msgBuffer);
+  // }
 
 }
 
