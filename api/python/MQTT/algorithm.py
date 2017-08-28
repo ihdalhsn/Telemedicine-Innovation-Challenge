@@ -1,11 +1,10 @@
-#test diffx
 import math
 import filtering as filt
 
 def main(lines):
     # print lines
     raw_signal = [0]*(len(lines)-2)
-    for i in xrange(len(raw_signal)):
+    for i in range(len(raw_signal)):
         # raw_signal[i] = float(lines[i+2].split(',')[0]) #BACA CSV
         raw_signal[i] = float(lines[i+2]) #BACA LIST
     len_sample = len(raw_signal)  
@@ -49,9 +48,10 @@ def main(lines):
     bpm_list = []
     st_level_list = []
     s_amplitude_list = []
-    fs = 360
+    fs = 250
     premature = 1
     beat = "normal"
+    p_exist = []
 
     # LOOPING TO GAIN PQST PEAK AND IT'S INTERVAL
     for i in range(len(r_peaks) - 1):
@@ -142,13 +142,15 @@ def main(lines):
         if(q_in == p_in):
             premature = premature + 1
             beat = "pvc"
+            p_exist.append(0)
+        else:
+            p_exist.append(1)
     # END LOOPING TO GAIN PQST PEAK AND IT'S INTERVAL
 
     # LOOPING TO GAIN PQST INTERVAL MEAN
     rr_temp = 0; pr_temp = 0 ; qrs_temp = 0; qt_temp = 0; qtcorr_temp = 0; bpm_temp = 0; st_level = 0; pq_temp = 0;
 
     total_rpeak = len(r_peaks)
-
     for k in range(len(rr_list)):
         rr_temp     = rr_temp + rr_list[k]
         pr_temp     = pr_temp + pr_list[k]
@@ -156,7 +158,6 @@ def main(lines):
         qt_temp     = qt_temp + qt_list[k]
         qtcorr_temp = qtcorr_temp + qt_corr[k]
         bpm_temp    = bpm_temp + bpm_list[k]
-
     try:
         qtcorr_mean = float(qtcorr_temp)/float(len(qt_corr))
         rr_mean     = float(rr_temp)/float(len(rr_list))
@@ -170,15 +171,37 @@ def main(lines):
         qt_mean     = 0
         qtcorr_mean = 0
         bpm_mean    = 0
+    
 
     # ================ DETECTTION =================
     # message = "normal"
-    if(premature > 1):
-    	message = "pvc"
+    # if(premature > 1):
+    # 	message = "pvc"
+    # else:
+    #     message = "normal"
+        
+    # lines = []
+    # # return message
+    # # print lines
+    # return beat
+
+    total_pvc = 0;
+    total_normal = 0;
+    for i in range(len(rr_list)):
+        if(rr_list[i] < rr_mean):
+            if(p_exist[i] == 0):
+                total_pvc += 1
+            else:
+                total_normal += 1
+        else:
+            if(p_exist[i] == 1):
+                total_normal += 1
+            else:
+                total_pvc += 1
+    
+    if(total_pvc > total_normal):
+        message = "pvc"
     else:
         message = "normal"
-  	lines = []
-    # return message
-    # print lines
-    return beat
-
+    print message, bpm_mean
+    return message

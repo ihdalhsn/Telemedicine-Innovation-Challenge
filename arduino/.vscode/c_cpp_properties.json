@@ -73,7 +73,8 @@
                     "/home/samurai/.platformio/packages/toolchain-xtensa/lib/gcc/xtensa-lx106-elf/4.8.2/include",
                     "/home/samurai/.platformio/packages/toolchain-xtensa/lib/gcc/xtensa-lx106-elf/4.8.2/include-fixed",
                     "/home/samurai/.platformio/packages/tool-unity",
-                    ""
+                    "",
+                    "${workspaceRoot}"
                 ]
             },
             "defines": [
@@ -87,7 +88,9 @@
                 "ARDUINO_ARCH_ESP8266",
                 "ARDUINO_ESP8266_NODEMCU",
                 ""
-            ]
+            ],
+            "intelliSenseMode": "clang-x64"
         }
-    ]
+    ],
+    "version": 2
 }

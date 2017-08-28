@@ -1,6 +1,5 @@
 
 #====================================== DERIVATIVE AND ADAPTIVE FILTERING ==============================================
-# Formula : H(z) = 0.1*(2+z^-1 - z^-2 - z^-3) #Five point derivative
 def five_point_derivative(raw_signal):
     ecg_der = []
     for i in xrange(len(raw_signal)):
